@@ -11,7 +11,7 @@ sequenceDiagram
     participant GitHub actions
     actor Authenticated bot
     actor Reviewer
-    Note right of Authenticated bot: A GitHub action with the necessary rights for getMembershipForUserInOrg
+    Note right of Authenticated bot: Authenticated bot is a GitHub action with the necessary rights for getMembershipForUserInOrg
     User->>issue: Adds comment with "ping conda-forge/help-python"
     activate GitHub actions
     alt is PR
