@@ -19,6 +19,15 @@
                   team_slug: 'staged-recipes',
                   username: github.event.sender.login
               });
-
-# Get if commenter is part of staged recipes
-# If yes, change label
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  labels: ['review-requested']
+              });
+              github.rest.issues.addLabels({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  labels: [label, 'Awaiting author contribution']
+              })
