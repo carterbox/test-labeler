@@ -20,7 +20,7 @@
                   let text = context.payload.comment.body;
                   let result = text.includes(team);
                   if (result) {
-                      label = team.replace("help-", "");
+                      label = team.replace("@conda-forge/help-", "");
                       github.rest.issues.addLabels({
                           issue_number: context.issue.number,
                           owner: context.repo.owner,
