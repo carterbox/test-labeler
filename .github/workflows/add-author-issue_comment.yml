@@ -18,7 +18,7 @@
               github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge',
                   team_slug: 'staged-recipes',
-                  username: ${{ github.event.sender.login }}
+                  username: '${{ github.event.sender.login }}'
               });
               github.rest.issues.removeLabel({
                   issue_number: context.issue.number,
