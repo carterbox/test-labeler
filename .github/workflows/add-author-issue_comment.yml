@@ -13,6 +13,7 @@
         - name: author-commented
           uses: actions/github-script@v6
           with:
+            debug: true
             script: |
               github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge,
