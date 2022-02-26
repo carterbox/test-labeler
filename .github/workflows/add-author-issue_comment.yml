@@ -16,7 +16,7 @@
             debug: true
             script: |
               github.rest.teams.getMembershipForUserInOrg({
-                  org: 'conda-forge,
+                  org: 'conda-forge',
                   team_slug: 'staged-recipes',
                   username: github.event.sender.login
               });
