@@ -8,10 +8,10 @@
     label-pr:
       name: Label PR
       if: >
-        (${{ github.event.sender.login }} != ${{ github.event.issue.user.login }})
-        && contains(${{ github.event.issue.labels.*.name }}, 'review-requested')
-        && ${{ github.event.issue.pull_request }}
-        && !contains(${{ github.event.issue.labels.*.name }}, 'Awaiting author contribution')
+        github.event.issue.pull_request
+        && (github.event.sender.login != github.event.issue.user.login)
+        && contains(github.event.issue.labels.*.name, 'review-requested')
+        && !contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
       runs-on: ubuntu-latest
       steps:
         - name: author-commented
@@ -20,7 +20,9 @@
             debug: true
             script: |
               console.log(
-                'Running because user ${{ github.event.sender.login }} commented,'
+                'Running because:'
+                + ' Issue is PR: ${{ github.event.issue.pull_request }}.'
+                + ' User ${{ github.event.sender.login }} commented,'
                 + ' but is not user ${{ github.event.issue.user.login }}.'
                 + ' The issue labels are ${{ github.event.issue.labels.*.name }}.'
               )
