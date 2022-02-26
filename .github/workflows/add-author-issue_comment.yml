@@ -9,9 +9,9 @@
       name: Label PR
       if: >
         github.event.issue.pull_request
+        && (github.event.sender.login != github.event.issue.user.login)
         && contains(github.event.issue.labels.*.name, 'review-requested')
         && !contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
-#        && (github.event.sender.login != github.event.issue.user.login)
       runs-on: ubuntu-latest
       steps:
         - name: author-commented
@@ -19,20 +19,14 @@
           with:
             debug: true
             script: |
-              console.log(
-                'Running because:'
-                + ' Issue is PR: ${{ github.event.issue.pull_request }}.'
-                + ' User ${{ github.event.sender.login }} commented,'
-                + ' but is not user ${{ github.event.issue.user.login }}.'
-                + ' The issue labels are ${{ github.event.issue.labels.*.name }}.'
-              )
-              console.log(
+              // FIXME: Requesting team membership requires authentication/pemissions
+              var reviewer_is_staged_recipes_member = true;
               github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge',
                   team_slug: 'staged-recipes',
                   username: '${{ github.event.sender.login }}'
-              }));
-              if (true) {
+              });
+              if (reviewer_is_staged_recipes_member) {
                 github.rest.issues.removeLabel({
                     issue_number: context.issue.number,
                     owner: context.repo.owner,
