@@ -30,5 +30,5 @@
                   issue_number: context.issue.number,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  labels: [label, 'Awaiting author contribution']
+                  labels: ['Awaiting author contribution']
               });
