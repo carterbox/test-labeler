@@ -19,6 +19,11 @@
           with:
             debug: true
             script: |
+              console.log(
+                'Running because user ${{ github.event.sender.login }} commented,'
+                + ' but is not user ${{ github.event.issue.user.login }}.'
+                + ' The issue labels are ${{ github.event.issue.labels.*.name }}.'
+              )
               github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge',
                   team_slug: 'staged-recipes',
