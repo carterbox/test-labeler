@@ -31,4 +31,4 @@
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   labels: [label, 'Awaiting author contribution']
-              })
+              });
