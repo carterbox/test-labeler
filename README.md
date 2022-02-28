@@ -29,7 +29,7 @@ sequenceDiagram
     deactivate GitHub actions
     Reviewer->>issue: Reviews
     activate Authenticated bot
-    Note right of Authenticated bot: Triggered file is "add-author-pr.yml" and "add-author-issue_comment.yml".
+    Note right of Authenticated bot: Triggered file is "add-author-issue_comment.yml".
     alt Commenter is not author of PR AND review-requested label exists AND is PR AND Awaiting author contribution label does not exist
         Authenticated bot-->>Reviewer: Checks membership
         alt Reviewer is part of staged-recipes
