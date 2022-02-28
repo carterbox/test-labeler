@@ -1,4 +1,4 @@
-  name: 'Label PR on review request'
+  name: 'Add review team'
 
   on:
     issue_comment:
@@ -6,7 +6,7 @@
 
   jobs:
     label-pr:
-      name: Label PR
+      name: Label PR with review team
       if: >
         github.event.issue.pull_request
         && !contains(github.event.issue.labels.*.name, 'review-requested')
