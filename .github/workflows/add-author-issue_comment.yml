@@ -13,16 +13,19 @@
   jobs:
     label-pr:
       name: Label PR
+# && (github.event.sender.login != github.event.issue.user.login)
+# &&(github.event.sender.login != github.event.pull_request.user.login)
       if: >
-        (github.event.issue.pull_request
-        && (github.event.sender.login != github.event.issue.user.login)
-        && contains(github.event.issue.labels.*.name, 'review-requested')
-        && !contains(github.event.issue.labels.*.name, 'Awaiting author contribution'))
-        ||
-        (!github.event.issue.pull_request
-        &&(github.event.sender.login != github.event.pull_request.user.login)
-        && contains(github.event.pull_request.labels.*.name, 'review-requested')
-        && !contains(github.event.pull_request.labels.*.name, 'Awaiting author contribution'))
+        ( 
+          contains(github.event, 'issue')
+          && github.event.issue.pull_request
+          && contains(github.event.issue.labels.*.name, 'review-requested')
+          && !contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+        ) || (
+          contains(github.event, 'pull_request')
+          && contains(github.event.pull_request.labels.*.name, 'review-requested')
+          && !contains(github.event.pull_request.labels.*.name, 'Awaiting author contribution')
+        )
       runs-on: ubuntu-latest
       steps:
         - name: author-commented
