@@ -9,7 +9,7 @@
       types: [created]
 
   jobs:
-    label-pr:
+    unlabel-pr:
       name: Remove awaiting author label
       if: >
         (github.event.sender.login == github.event.pull_request.user.login)
