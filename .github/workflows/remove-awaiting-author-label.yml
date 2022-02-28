@@ -1,4 +1,4 @@
-  name: 'Remove awaiting author label'
+  name: Remove awaiting author label
 
   on:
     pull_request_target:
@@ -10,7 +10,7 @@
 
   jobs:
     label-pr:
-      name: Label PR
+      name: Remove awaiting author label
       if: >
         (github.event.sender.login == github.event.pull_request.user.login)
         && contains(github.event.pull_request.labels.*.name, 'Awaiting author contribution')
