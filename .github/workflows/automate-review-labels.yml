@@ -22,6 +22,7 @@
         - name: team-label
           uses: actions/github-script@v6
           with:
+            debug: true
             script: |
               const teams = [
                 '@conda-forge/staged-recipes',
@@ -113,6 +114,7 @@
         - name: author-commented
           uses: actions/github-script@v6
           with:
+            debug: true
             script: |
               github.rest.issues.removeLabel({
                   issue_number: context.issue.number,
