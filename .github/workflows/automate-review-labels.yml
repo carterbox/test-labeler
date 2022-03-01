@@ -73,7 +73,7 @@
         )
       runs-on: ubuntu-latest
       steps:
-        - name: author-commented
+        - name: swap-labels
           uses: actions/github-script@v6
           with:
             debug: true
@@ -115,7 +115,7 @@
         )
       runs-on: ubuntu-latest
       steps:
-        - name: author-commented
+        - name: remove-label
           uses: actions/github-script@v6
           with:
             debug: true
