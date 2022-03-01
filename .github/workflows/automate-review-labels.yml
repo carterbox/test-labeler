@@ -33,7 +33,7 @@
                 '@conda-forge/help-julia',
                 '@conda-forge/help-nodejs',
                 '@conda-forge/help-perl',
-                '@conda-forge/help-python',
+                'conda-forge/help-python',
                 '@conda-forge/help-python-c',
                 '@conda-forge/help-r',
                 '@conda-forge/help-ruby'
