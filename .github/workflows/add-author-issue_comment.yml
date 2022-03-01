@@ -17,12 +17,12 @@
 # &&(github.event.sender.login != github.event.pull_request.user.login)
       if: >
         ( 
-          contains(github.event, 'issue')
+          github.event.issue
           && github.event.issue.pull_request
           && contains(github.event.issue.labels.*.name, 'review-requested')
           && !contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
         ) || (
-          contains(github.event, 'pull_request')
+          github.event.pull_request
           && contains(github.event.pull_request.labels.*.name, 'review-requested')
           && !contains(github.event.pull_request.labels.*.name, 'Awaiting author contribution')
         )
