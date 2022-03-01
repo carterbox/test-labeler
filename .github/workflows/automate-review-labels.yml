@@ -1,0 +1,122 @@
+  name: 'Automated review labels'
+
+  on:
+    issue_comment:
+      types: [created]
+    pull_request_target:
+      types: [synchronize]
+    pull_request_review:
+      types: [submitted]
+    pull_request_review_comment:
+      types: [created]
+
+  jobs:
+    add-review-team-label:
+      name: 'When pinged, label a PR with review team'
+      if: >
+        github.event.issue
+        && github.event.issue.pull_request
+        && !contains(github.event.issue.labels.*.name, 'review-requested')
+      runs-on: ubuntu-latest
+      steps:
+        - name: team-label
+          uses: actions/github-script@v6
+          with:
+            script: |
+              const teams = [
+                '@conda-forge/staged-recipes',
+                '@conda-forge/help-c-cpp',
+                '@conda-forge/help-cdts',
+                '@conda-forge/help-go',
+                '@conda-forge/help-java',
+                '@conda-forge/help-julia',
+                '@conda-forge/help-nodejs',
+                '@conda-forge/help-perl',
+                '@conda-forge/help-python',
+                '@conda-forge/help-python-c',
+                '@conda-forge/help-r',
+                '@conda-forge/help-ruby'
+              ];
+              for (const team of teams) {
+                  let text = context.payload.comment.body;
+                  let result = text.includes(team);
+                  if (result) {
+                      label = team.replace("@conda-forge/help-", "");
+                      github.rest.issues.addLabels({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          labels: [label, 'review-requested']
+                      })
+                  }
+              }
+
+    add-awaiting-author-label:
+      name: 'When reviewed, add awaiting author label'
+      if: >
+        ( 
+          github.event.issue
+          && github.event.issue.pull_request
+          && (github.event.sender.login != github.event.issue.user.login)
+          && contains(github.event.issue.labels.*.name, 'review-requested')
+          && !contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+        ) || (
+          github.event.pull_request
+          && (github.event.sender.login != github.event.pull_request.user.login)
+          && contains(github.event.pull_request.labels.*.name, 'review-requested')
+          && !contains(github.event.pull_request.labels.*.name, 'Awaiting author contribution')
+        )
+      runs-on: ubuntu-latest
+      steps:
+        - name: author-commented
+          uses: actions/github-script@v6
+          with:
+            debug: true
+            script: |
+              // FIXME: Requesting team membership requires authentication/pemissions
+              var reviewer_is_staged_recipes_member = true;
+              //github.rest.teams.getMembershipForUserInOrg({
+              //    org: 'conda-forge',
+              //    team_slug: 'staged-recipes',
+              //    username: '${{ github.event.sender.login }}'
+              //});
+              if (reviewer_is_staged_recipes_member) {
+                github.rest.issues.removeLabel({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: ['review-requested']
+                });
+                github.rest.issues.addLabels({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: ['Awaiting author contribution']
+                });
+              }
+
+    remove-awaiting-author:
+      name: 'When any author action, remove awaiting author label'
+      if: >
+        (
+          github.event.issue
+          && github.event.issue.pull_request
+          && (github.event.sender.login == github.event.issue.user.login)
+          && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+        ) || (
+          github.event.pull_request
+          && (github.event.sender.login == github.event.pull_request.user.login)
+          && contains(github.event.pull_request.labels.*.name, 'Awaiting author contribution')
+        )
+      runs-on: ubuntu-latest
+      steps:
+        - name: author-commented
+          uses: actions/github-script@v6
+          with:
+            script: |
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: ['Awaiting author contribution']
+              })
