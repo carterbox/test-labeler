@@ -47,3 +47,5 @@ sequenceDiagram
 ```
 
 _Note_: The blue part is proposed and not actually integrated yet.
+
+Some action that does not have comment text?
