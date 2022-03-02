@@ -51,6 +51,7 @@
                           repo: context.repo.repo,
                           labels: [label, 'review-requested']
                       })
+                      // TODO: Maybe use GitHub API to request review / assign team
                   }
               }
 
