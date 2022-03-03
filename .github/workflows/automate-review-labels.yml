@@ -43,7 +43,7 @@
               ];
               for (const team of teams) {
                   let text = context.payload.comment.body;
-                  const regex = new RegExp(team + '[^\-]');
+                  const regex = new RegExp(team + '[^\-]|' + team + '$');
                   let result = regex.test(text);
                   if (result) {
                       // FIXME: Add the '@' symbol back into replace
