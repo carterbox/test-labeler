@@ -19,7 +19,7 @@
         && !contains(github.event.issue.labels.*.name, 'review-requested')
       runs-on: ubuntu-latest
       steps:
-        - name: add-label
+        - name: add-labels
           uses: actions/github-script@v6
           with:
             debug: true
@@ -52,6 +52,12 @@
                           repo: context.repo.repo,
                           labels: [label, 'review-requested']
                       })
+                      github.rest.issues.removeLabel({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          name: ['Awaiting author contribution']
+                      });
                       // TODO: Maybe use GitHub API to request review / assign team
                   }
               }
@@ -71,7 +77,7 @@
         )
       runs-on: ubuntu-latest
       steps:
-        - name: remove-label
+        - name: swap-labels
           uses: actions/github-script@v6
           with:
             debug: true
@@ -89,5 +95,11 @@
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     name: ['review-requested']
+                });
+                github.rest.issues.addLabels({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: ['Awaiting author contribution']
                 });
               }

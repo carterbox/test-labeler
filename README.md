@@ -19,6 +19,7 @@ sequenceDiagram
             alt team is in comment
                 GitHub actions->>issue: Adds review-requested label
                 GitHub actions->>issue: Adds team label
+                GitHub actions->>issue: Remove Awaiting author contribution label
                 rect rgb(191, 223, 255)
                     GitHub actions-->>issue: Assigns team for review
                 end
@@ -32,6 +33,7 @@ sequenceDiagram
         Authenticated bot-->>Reviewer: Checks membership
         alt Reviewer is part of staged-recipes
             Authenticated bot->>issue: Remove review-requested label
+            Authenticated bot->>issue: Add Awaiting author contribution label
         end
     end
     deactivate Authenticated bot
