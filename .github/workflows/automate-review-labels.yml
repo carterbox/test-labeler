@@ -81,12 +81,12 @@
             github-token: ${{ secrets.test-label }}
             script: |
               // FIXME: Requesting team membership requires authentication/pemissions
-              var reviewer_is_staged_recipes_member = true;
-              //github.rest.teams.getMembershipForUserInOrg({
-              //    org: 'conda-forge',
-              //    team_slug: 'staged-recipes',
-              //    username: '${{ github.event.sender.login }}'
-              //});
+              // var reviewer_is_staged_recipes_member = true;
+              github.rest.teams.getMembershipForUserInOrg({
+                  org: 'conda-forge',
+                  team_slug: 'staged-recipes',
+                  username: '${{ github.event.sender.login }}'
+              });
               if (reviewer_is_staged_recipes_member) {
                 github.rest.issues.removeLabel({
                     issue_number: context.issue.number,
