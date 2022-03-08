@@ -25,7 +25,6 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            github-token: ${{ secrets.test-label }}
             script: |
               // FIXME: Add the '@' symbol back into teams
               const teams = [
@@ -79,6 +78,7 @@
           uses: actions/github-script@v6
           with:
             debug: true
+            github-token: ${{ secrets.test-label }}
             script: |
               // FIXME: Requesting team membership requires authentication/pemissions
               var reviewer_is_staged_recipes_member = true;
