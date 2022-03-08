@@ -78,7 +78,7 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            github-token: ${{ secrets.test-label }}
+            github-token: ${{ secrets.ACCESS_USER }}
             script: |
               // FIXME: Requesting team membership requires authentication/pemissions
               // var reviewer_is_staged_recipes_member = true;
