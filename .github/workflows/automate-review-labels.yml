@@ -68,9 +68,11 @@
         (
           github.event.issue
           && github.event.issue.pull_request
+          && (github.event.sender.login != github.event.issue.user.login)
           && contains(github.event.issue.labels.*.name, 'review-requested')
         ) || (
           github.event.pull_request
+          && (github.event.sender.login != github.event.pull_request.user.login)
           && contains(github.event.pull_request.labels.*.name, 'review-requested')
         )
       runs-on: ubuntu-latest
@@ -81,6 +83,10 @@
             debug: true
             github-token: ${{ secrets.ACCESS_USER }}
             script: |
+              // This step is separate from the labeling step because it uses a token
+              // with different permissions. If it is combined with the following step,
+              // then the labeling actions are marked as being completed by whomever
+              // created the token.
               const membership_response = github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge',
                   team_slug: 'staged-recipes',
@@ -98,7 +104,6 @@
           if: ${{ success() }}
           uses: actions/github-script@v6
           with:
-            debug: true
             script: |
               github.rest.issues.removeLabel({
                   issue_number: context.issue.number,
