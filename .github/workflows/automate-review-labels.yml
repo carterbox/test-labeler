@@ -75,19 +75,25 @@
         )
       runs-on: ubuntu-latest
       steps:
-        - name: swap-labels
+        - name: check-membership
           uses: actions/github-script@v6
           with:
             debug: true
+            github-token: ${{ secrets.ACCESS_USER }}
             script: |
               // FIXME: Requesting team membership requires authentication/pemissions
-              // var reviewer_is_staged_recipes_member = true;
               const reviewer_is_staged_recipes_member = github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge',
                   team_slug: 'staged-recipes',
                   username: '${{ github.event.sender.login }}'
               });
-              console.log(reviewer_is_staged_recipes_member)
+              return 1;
+        - name: swap-labels
+          if: ${{ success() }}
+          uses: actions/github-script@v6
+          with:
+            debug: true
+            script: |
               if (reviewer_is_staged_recipes_member) {
                 github.rest.issues.removeLabel({
                     issue_number: context.issue.number,
