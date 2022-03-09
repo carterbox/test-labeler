@@ -87,7 +87,7 @@
                   team_slug: 'staged-recipes',
                   username: '${{ github.event.sender.login }}'
               });
-              return 1;
+              throw new Error('Reviewer not member of conda-forge/staged-recipes');
         - name: swap-labels
           if: ${{ success() }}
           uses: actions/github-script@v6
