@@ -81,16 +81,19 @@
             debug: true
             github-token: ${{ secrets.ACCESS_USER }}
             script: |
-              // FIXME: Requesting team membership requires authentication/pemissions
-              const reviewer_is_staged_recipes_member = github.rest.teams.getMembershipForUserInOrg({
+              const membership_response = github.rest.teams.getMembershipForUserInOrg({
                   org: 'conda-forge',
                   team_slug: 'staged-recipes',
                   username: '${{ github.event.sender.login }}'
               });
-              reviewer_is_staged_recipes_member.then(function(result) {
+              membership_response.then(function(result) {
                  console.log(result);
+                 if (result.data.state == 'active'){
+                   return;
+                 } else {
+                   throw new Error('Reviewer not active member of conda-forge/staged-recipes');
+                 }
               });
-              throw new Error('Reviewer not member of conda-forge/staged-recipes');
         - name: swap-labels
           if: ${{ success() }}
           uses: actions/github-script@v6
