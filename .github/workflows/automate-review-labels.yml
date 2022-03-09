@@ -88,7 +88,6 @@
                   username: '${{ github.event.sender.login }}'
               });
               console.log(reviewer_is_staged_recipes_member)
-              // FIXME: Remove verbose
               if (reviewer_is_staged_recipes_member) {
                 github.rest.issues.removeLabel({
                     issue_number: context.issue.number,
