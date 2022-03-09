@@ -87,6 +87,7 @@
                   team_slug: 'staged-recipes',
                   username: '${{ github.event.sender.login }}'
               });
+              console.log(Promise.resolve(reviewer_is_staged_recipes_member));
               throw new Error('Reviewer not member of conda-forge/staged-recipes');
         - name: swap-labels
           if: ${{ success() }}
