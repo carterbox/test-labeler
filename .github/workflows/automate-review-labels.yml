@@ -1,0 +1,105 @@
+  name: 'Automated review labels'
+
+  on:
+    issue_comment:
+      types: [created]
+    pull_request_review:
+      types: [submitted]
+    pull_request_review_comment:
+      types: [created]
+
+  jobs:
+    add-review-team-label:
+      name: 'When pinged, label a PR with review team'
+      # FIXME: Add another condition that skips this step if there is no text
+      # body to search for team mentions? i.e. for new commits without comment
+      if: >
+        github.event.issue
+        && github.event.issue.pull_request
+        && !contains(github.event.issue.labels.*.name, 'review-requested')
+      runs-on: ubuntu-latest
+      steps:
+        - name: add-labels
+          uses: actions/github-script@v6
+          with:
+            debug: true
+            script: |
+              // FIXME: Add the '@' symbol back into teams
+              const teams = [
+                'conda-forge/staged-recipes',
+                'conda-forge/help-c-cpp',
+                'conda-forge/help-cdts',
+                'conda-forge/help-go',
+                'conda-forge/help-java',
+                'conda-forge/help-julia',
+                'conda-forge/help-nodejs',
+                'conda-forge/help-perl',
+                'conda-forge/help-python',
+                'conda-forge/help-python-c',
+                'conda-forge/help-r',
+                'conda-forge/help-ruby'
+              ];
+              for (const team of teams) {
+                  let text = context.payload.comment.body;
+                  const regex = new RegExp(team + '[^\-]|' + team + '$');
+                  let result = regex.test(text);
+                  if (result) {
+                      // FIXME: Add the '@' symbol back into replace
+                      label = team.replace("conda-forge/help-", "");
+                      github.rest.issues.addLabels({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          labels: [label, 'review-requested']
+                      })
+                      github.rest.issues.removeLabel({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          name: ['Awaiting author contribution']
+                      });
+                      // TODO: Maybe use GitHub API to request review / assign team
+                  }
+              }
+
+    remove-review-requested-label:
+      name: 'When reviewed, remove review-requested label'
+      if: >
+        (
+          github.event.issue
+          && github.event.issue.pull_request
+          && contains(github.event.issue.labels.*.name, 'review-requested')
+        ) || (
+          github.event.pull_request
+          && contains(github.event.pull_request.labels.*.name, 'review-requested')
+        )
+      runs-on: ubuntu-latest
+      steps:
+        - name: swap-labels
+          uses: actions/github-script@v6
+          with:
+            debug: true
+            github-token: ${{ secrets.ACCESS_USER }}
+            script: |
+              // FIXME: Requesting team membership requires authentication/pemissions
+              // var reviewer_is_staged_recipes_member = true;
+              const reviewer_is_staged_recipes_member = github.rest.teams.getMembershipForUserInOrg({
+                  org: 'conda-forge',
+                  team_slug: 'staged-recipes',
+                  username: '${{ github.event.sender.login }}'
+              });
+              console.log(reviewer_is_staged_recipes_member)
+              if (reviewer_is_staged_recipes_member) {
+                github.rest.issues.removeLabel({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: ['review-requested']
+                });
+                github.rest.issues.addLabels({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: ['Awaiting author contribution']
+                });
+              }
