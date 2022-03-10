@@ -2,7 +2,7 @@
 
 Test the conda-forge/staged-recipes actions.
 
-The workflow is the following:
+## Workflow
 
 ```mermaid
 sequenceDiagram
@@ -14,7 +14,7 @@ sequenceDiagram
     Note right of Authenticated bot: Authenticated bot is a GitHub action with the necessary rights for getMembershipForUserInOrg
     User->>issue: Adds any comment
     activate GitHub actions
-    alt is PR
+    alt is PR AND no review-requested label exists
         loop Over ['@conda-forge/staged-recipes', '@conda-forge/help-python', '@conda-forge/help-python-c', '@conda-forge/help-r', '@conda-forge/help-java', '@conda-forge/help-nodejs', '@conda-forge/help-c-cpp', '@conda-forge/help-perl', '@conda-forge/help-julia', '@conda-forge/help-ruby']
             alt team is in comment
                 GitHub actions->>issue: Adds review-requested label
@@ -39,11 +39,13 @@ sequenceDiagram
     deactivate Authenticated bot
 ```
 
+_Note_: The blue part is proposed and not actually integrated yet.
+
+## Label State Diagram
+
 ```mermaid
 stateDiagram-v2
     [*] --> reviewrequested,team: User pings team
     reviewrequested,team --> awaitingauthor,team: staged-recipes reviews
-    awaitingauthor,team --> reviewrequested,team: User pings team OR rerequest review from member of staged recipes
+    awaitingauthor,team --> reviewrequested,team: User pings team
 ```
-
-_Note_: The blue part is proposed and not actually integrated yet.
