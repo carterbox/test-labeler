@@ -39,4 +39,11 @@ sequenceDiagram
     deactivate Authenticated bot
 ```
 
+```mermaid
+stateDiagram-v2
+    [*] --> reviewrequested,team: User pings team
+    reviewrequested,team --> awaitingauthor,team: staged-recipes reviews
+    awaitingauthor,team --> reviewrequested,team: User pings team OR rerequest review from member of staged recipes
+```
+
 _Note_: The blue part is proposed and not actually integrated yet.
