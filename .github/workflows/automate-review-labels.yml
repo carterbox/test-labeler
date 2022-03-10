@@ -11,8 +11,6 @@
   jobs:
     add-review-team-label:
       name: 'When pinged, label a PR with review team'
-      # FIXME: Add another condition that skips this step if there is no text
-      # body to search for team mentions? i.e. for new commits without comment
       if: >
         github.event.issue
         && github.event.issue.pull_request
