@@ -17,10 +17,11 @@
         && !contains(github.event.issue.labels.*.name, 'review-requested')
       runs-on: ubuntu-latest
       steps:
-        - name: add-labels
+        - name: check-teams
           uses: actions/github-script@v6
           with:
             debug: true
+            result-encoding: json
             script: |
               // FIXME: Add the '@' symbol back into teams
               const teams = [
@@ -37,6 +38,7 @@
                 'conda-forge/help-r',
                 'conda-forge/help-ruby'
               ];
+              let found_label = false;
               for (const team of teams) {
                   let text = context.payload.comment.body;
                   const regex = new RegExp(team + '[^\-]|' + team + '$');
@@ -44,21 +46,32 @@
                   if (result) {
                       // FIXME: Add the '@' symbol back into replace
                       label = team.replace("conda-forge/help-", "");
+                      label_no_staged = label.replace("@conda-forge/", "");
+                      let found_label = true;
                       github.rest.issues.addLabels({
                           issue_number: context.issue.number,
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          labels: [label, 'review-requested']
-                      })
-                      github.rest.issues.removeLabel({
-                          issue_number: context.issue.number,
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          name: ['Awaiting author contribution']
+                          labels: [label_no_staged, 'review-requested']
                       });
                       // TODO: Maybe use GitHub API to request review / assign team
                   }
-              }
+              };
+              return found_label
+        - name: remove-labels
+          if: >
+            steps.check-teams.outputs.result
+            && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+          uses: actions/github-script@v6
+          with:
+            script: |
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: ['Awaiting author contribution']
+              })
+
 
     remove-review-requested-label:
       name: 'When reviewed, remove review-requested label'
@@ -79,7 +92,7 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            github-token: ${{ secrets.ACCESS_USER }}
+            github-token: ${{ secrets.GH_TOKEN }}
             script: |
               // This step is separate from the labeling step because it uses a token
               // with different permissions. If it is combined with the following step,
@@ -98,8 +111,21 @@
                    throw new Error('Reviewer not active member of conda-forge/staged-recipes');
                  }
               });
-        - name: swap-labels
+        - name: add-labels
           if: ${{ success() }}
+          uses: actions/github-script@v6
+          with:
+            script: |
+              github.rest.issues.addLabels({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  labels: ['Awaiting author contribution']
+              });
+        - name: remove-labels
+          if: >
+            steps.add-labels.outputs.result
+            && contains(github.event.issue.labels.*.name, 'review-requested')
           uses: actions/github-script@v6
           with:
             script: |
@@ -108,10 +134,4 @@
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   name: ['review-requested']
-              });
-              github.rest.issues.addLabels({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  labels: ['Awaiting author contribution']
               });
