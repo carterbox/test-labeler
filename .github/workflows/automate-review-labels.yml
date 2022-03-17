@@ -59,9 +59,9 @@
               };
               return found_label
         - name: remove-labels
-          if: |
-            steps.check_teams.outputs.result == 'true'
-              && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+          if: >
+            (steps.check_teams.outputs.result == 'true')
+            && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
           uses: actions/github-script@v6
           with:
             script: |
@@ -89,6 +89,7 @@
       runs-on: ubuntu-latest
       steps:
         - name: check-membership
+          id: check_membership
           uses: actions/github-script@v6
           with:
             debug: true
@@ -106,13 +107,14 @@
               membership_response.then(function(result) {
                  console.log(result);
                  if (result.data.state == 'active'){
-                   return;
+                   return true;
                  } else {
-                   throw new Error('Reviewer not active member of conda-forge/staged-recipes');
+                   return false;
                  }
               });
         - name: add-labels
-          if: ${{ success() }}
+          if: >
+            (steps.check_membership.outputs.result == 'true')
           uses: actions/github-script@v6
           with:
             script: |
@@ -124,7 +126,7 @@
               });
         - name: remove-labels
           if: >
-            ${{ steps.add-labels.outputs.result == 'true' }}
+            (steps.check_membership.outputs.result == 'true')
             && contains(github.event.issue.labels.*.name, 'review-requested')
           uses: actions/github-script@v6
           with:
