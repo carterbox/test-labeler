@@ -23,20 +23,19 @@
           with:
             debug: true
             script: |
-              // FIXME: Add the '@' symbol back into teams
               const teams = [
-                'conda-forge/staged-recipes',
-                'conda-forge/help-c-cpp',
-                'conda-forge/help-cdts',
-                'conda-forge/help-go',
-                'conda-forge/help-java',
-                'conda-forge/help-julia',
-                'conda-forge/help-nodejs',
-                'conda-forge/help-perl',
-                'conda-forge/help-python',
-                'conda-forge/help-python-c',
-                'conda-forge/help-r',
-                'conda-forge/help-ruby'
+                '@conda-forge/staged-recipes',
+                '@conda-forge/help-c-cpp',
+                '@conda-forge/help-cdts',
+                '@conda-forge/help-go',
+                '@conda-forge/help-java',
+                '@conda-forge/help-julia',
+                '@conda-forge/help-nodejs',
+                '@conda-forge/help-perl',
+                '@conda-forge/help-python',
+                '@conda-forge/help-python-c',
+                '@conda-forge/help-r',
+                '@conda-forge/help-ruby'
               ];
               let found_label = false;
               for (const team of teams) {
@@ -44,17 +43,21 @@
                   const regex = new RegExp(team + '[^\-]|' + team + '$');
                   let result = regex.test(text);
                   if (result) {
-                      // FIXME: Add the '@' symbol back into replace
-                      label = team.replace("conda-forge/help-", "");
-                      label_no_staged = label.replace("@conda-forge/", "");
+                      const slug = team.replace("@conda-forge/", "");
+                      const label = slug.replace("help-", "");
                       found_label = true;
                       github.rest.issues.addLabels({
                           issue_number: context.issue.number,
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          labels: [label_no_staged, 'review-requested']
+                          labels: [label, 'review-requested']
                       });
-                      // TODO: Maybe use GitHub API to request review / assign team
+                      github.rest.pulls.requestReviewers({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: context.issue.number,
+                        team_reviewers: [slug],
+                      });
                   }
               };
               return found_label
@@ -93,24 +96,25 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            github-token: ${{ secrets.GH_TOKEN }}
             script: |
-              // This step is separate from the labeling step because it uses a token
-              // with different permissions. If it is combined with the following step,
-              // then the labeling actions are marked as being completed by whomever
-              // created the token.
-              const membership_response = github.rest.teams.getMembershipForUserInOrg({
-                  org: 'conda-forge',
-                  team_slug: 'staged-recipes',
-                  username: '${{ github.event.sender.login }}'
+              const requested_reviewers_response = github.rest.pulls.listRequestedReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
               });
-              membership_response.then(function(result) {
-                 console.log(result);
-                 if (result.data.state == 'active'){
-                   return true;
-                 } else {
-                   return false;
-                 }
+              requested_reviewers_response.then(function(result) {
+                console.log(result);
+                const slug = 'staged-recipes';
+                // FIXME: Check if conda-forge specific teams are in list
+                if (
+                  result.team
+                  && result.team.length > 0
+                ){
+                  // has not been reviewed by the team
+                  return false;
+                } else {
+                  return true;
+                }
               });
         - name: add-labels
           if: >
