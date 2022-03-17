@@ -105,15 +105,14 @@
                 const slug = 'staged-recipes';
                 // FIXME: Check if conda-forge specific teams are in list
                 if (
-                  result.team
-                  && result.team.length > 0
+                  result.status == 200
+                  && result.data.teams.length == 0
                 ){
-                  // has not been reviewed by the team
-                  return false;
-                } else {
+                  // No team reviews requested, so we can swap labels.
                   return true;
                 }
               });
+              return false;
         - name: add-labels
           if: >
             (steps.check_membership.outputs.result == 'true')
