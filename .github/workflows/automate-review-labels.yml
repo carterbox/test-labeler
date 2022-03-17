@@ -22,7 +22,7 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            result-encoding: json
+            result-encoding: string
             script: |
               // FIXME: Add the '@' symbol back into teams
               const teams = [
@@ -48,7 +48,7 @@
                       // FIXME: Add the '@' symbol back into replace
                       label = team.replace("conda-forge/help-", "");
                       label_no_staged = label.replace("@conda-forge/", "");
-                      let found_label = true;
+                      found_label = true;
                       github.rest.issues.addLabels({
                           issue_number: context.issue.number,
                           owner: context.repo.owner,
