@@ -60,8 +60,9 @@
               return found_label
         - name: remove-labels
           if: >
-            ${{ steps.check_teams.outputs.result == 'true'}}
-            && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+            ${{ (steps.check_teams.outputs.result == 'true')
+                && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+             }}
           uses: actions/github-script@v6
           with:
             script: |
