@@ -18,6 +18,7 @@
       runs-on: ubuntu-latest
       steps:
         - name: check-teams
+          id: check_teams
           uses: actions/github-script@v6
           with:
             debug: true
@@ -60,7 +61,7 @@
               return found_label
         - name: remove-labels
           if: >
-            steps.check-teams.outputs.result
+            steps.check_teams.outputs.result
             && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
           uses: actions/github-script@v6
           with:
