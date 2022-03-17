@@ -95,6 +95,14 @@
           with:
             debug: true
             script: |
+              const labels_response = coctokit.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+              labels_response.then(function(result) {
+                console.log(result);
+              }
               const requested_reviewers_response = github.rest.pulls.listRequestedReviewers({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
