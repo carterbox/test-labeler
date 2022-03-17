@@ -22,7 +22,6 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            result-encoding: json
             script: |
               // FIXME: Add the '@' symbol back into teams
               const teams = [
@@ -39,7 +38,7 @@
                 'conda-forge/help-r',
                 'conda-forge/help-ruby'
               ];
-              let found_label = 0;
+              let found_label = false;
               for (const team of teams) {
                   let text = context.payload.comment.body;
                   const regex = new RegExp(team + '[^\-]|' + team + '$');
@@ -48,7 +47,7 @@
                       // FIXME: Add the '@' symbol back into replace
                       label = team.replace("conda-forge/help-", "");
                       label_no_staged = label.replace("@conda-forge/", "");
-                      found_label = 1;
+                      found_label = true;
                       github.rest.issues.addLabels({
                           issue_number: context.issue.number,
                           owner: context.repo.owner,
@@ -61,7 +60,7 @@
               return found_label
         - name: remove-labels
           if: >
-            steps.check_teams.outputs.result
+            ${{ steps.check_teams.outputs.result == 'true'}}
             && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
           uses: actions/github-script@v6
           with:
@@ -125,7 +124,7 @@
               });
         - name: remove-labels
           if: >
-            steps.add-labels.outputs.result
+            ${{ steps.add-labels.outputs.result == 'true' }}
             && contains(github.event.issue.labels.*.name, 'review-requested')
           uses: actions/github-script@v6
           with:
