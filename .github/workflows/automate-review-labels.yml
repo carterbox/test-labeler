@@ -22,7 +22,6 @@
           uses: actions/github-script@v6
           with:
             debug: true
-            result-encoding: string
             script: |
               // FIXME: Add the '@' symbol back into teams
               const teams = [
