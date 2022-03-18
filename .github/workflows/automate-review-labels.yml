@@ -95,31 +95,24 @@
           with:
             debug: true
             script: |
-              console.log(context.issue.labels);
-              const labels_response = github.rest.issues.listLabelsOnIssue({
+              const labelsPromise = github.rest.issues.listLabelsOnIssue({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
               });
-              labels_response.then(function(result) {
-                console.log(result);
-              });
-              const requested_reviewers_response = github.rest.pulls.listRequestedReviewers({
+              const requestedReviewersPromise = github.rest.pulls.listRequestedReviewers({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.issue.number,
               });
-              requested_reviewers_response.then(function(result) {
-                console.log(result);
-                const slug = 'staged-recipes';
-                // FIXME: Check if conda-forge specific teams are in list
-                if (
-                  result.status == 200
-                  && result.data.teams.length == 0
-                ){
-                  // No team reviews requested, so we can swap labels.
-                  return true;
-                }
+              Promise.all([labelsPromise, requestedReviewersPromise])
+                .then( responses => {
+                  console.log(responses);
+                  // FIXME: Check if conda-forge specific teams are in list
+                  const teams = responses[0].data.*.name;
+                  const requests = responses[1].data.teams;
+                  console.log(teams);
+                  console.log(requests);
               });
               return false;
         - name: add-labels
