@@ -96,7 +96,7 @@
             debug: true
             script: |
               console.log(context.issue.labels);
-              const labels_response = coctokit.rest.issues.listLabelsOnIssue({
+              const labels_response = github.rest.issues.listLabelsOnIssue({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
