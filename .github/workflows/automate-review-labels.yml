@@ -109,9 +109,9 @@
                 .then( responses => {
                   console.log(responses);
                   // FIXME: Check if conda-forge specific teams are in list
-                  const teams = responses[0].data.*.name;
+                  const labels = responses[0].data.map(a => a.name);
                   const requests = responses[1].data.teams;
-                  console.log(teams);
+                  console.log(labels);
                   console.log(requests);
               });
               return false;
