@@ -52,6 +52,8 @@
                           repo: context.repo.repo,
                           labels: [label, 'review-requested']
                       });
+                      // NOTE: Team review request is required to be posted for
+                      // membership check to work.
                       github.rest.pulls.requestReviewers({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -89,8 +91,8 @@
         )
       runs-on: ubuntu-latest
       steps:
-        - name: check-membership
-          id: check_membership
+        - name: check-team-review
+          id: check_team_review
           uses: actions/github-script@v6
           with:
             debug: true
@@ -108,16 +110,22 @@
               Promise.all([labelsPromise, requestedReviewersPromise])
                 .then( responses => {
                   console.log(responses);
-                  // FIXME: Check if conda-forge specific teams are in list
                   const labels = responses[0].data.map(a => a.name);
-                  const requests = responses[1].data.teams;
+                  const team_review_requests = responses[1].data.teams;
                   console.log(labels);
-                  console.log(requests);
+                  console.log(team_review_requests);
+                  if (team_review_requests.length == 0){
+                    // Must have been reviewed by team member because no team
+                    // requests remaining. NOTE: If multiple teams requested,
+                    // review-requested label will not clear until all team
+                    // requests satisfied.
+                    return true;
+                  }
               });
               return false;
         - name: add-labels
           if: >
-            (steps.check_membership.outputs.result == 'true')
+            (steps.check_team_review.outputs.result == 'true')
           uses: actions/github-script@v6
           with:
             script: |
@@ -129,7 +137,7 @@
               });
         - name: remove-labels
           if: >
-            (steps.check_membership.outputs.result == 'true')
+            (steps.check_team_review.outputs.result == 'true')
             && contains(github.event.issue.labels.*.name, 'review-requested')
           uses: actions/github-script@v6
           with:
