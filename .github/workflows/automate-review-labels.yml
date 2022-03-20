@@ -81,14 +81,8 @@
     remove-review-requested-label:
       name: 'When reviewed, remove review-requested label'
       if: >
-        (
-          github.event.issue
-          && github.event.issue.pull_request
-          && contains(github.event.issue.labels.*.name, 'review-requested')
-        ) || (
-          github.event.pull_request
-          && contains(github.event.pull_request.labels.*.name, 'review-requested')
-        )
+        github.event.pull_request
+        && contains(github.event.pull_request.labels.*.name, 'review-requested')
       runs-on: ubuntu-latest
       steps:
         - name: check-team-review
