@@ -101,7 +101,7 @@
                 repo: context.repo.repo,
                 pull_number: context.issue.number,
               });
-              Promise.all([labelsPromise, requestedReviewersPromise])
+              return Promise.all([labelsPromise, requestedReviewersPromise])
                 .then( responses => {
                   console.log(responses);
                   const labels = responses[0].data.map(a => a.name);
@@ -117,9 +117,9 @@
                     console.log("No more requested team reviews.");
                     return true;
                   }
+                  console.log("Team reviews still pending.");
+                  return false;
               });
-              console.log("Team reviews still pending.");
-              return false;
         - name: add-labels
           if: >
             (steps.check_team_review.outputs.result == 'true')
