@@ -108,14 +108,17 @@
                   const team_review_requests = responses[1].data.teams;
                   console.log(labels);
                   console.log(team_review_requests);
+                  console.log(team_review_requests.length);
                   if (team_review_requests.length == 0){
                     // Must have been reviewed by team member because no team
                     // requests remaining. NOTE: If multiple teams requested,
                     // review-requested label will not clear until all team
                     // requests satisfied.
+                    console.log("No more requested team reviews.");
                     return true;
                   }
               });
+              console.log("Team reviews still pending.");
               return false;
         - name: add-labels
           if: >
