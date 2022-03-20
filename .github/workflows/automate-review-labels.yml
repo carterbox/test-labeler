@@ -135,7 +135,7 @@
         - name: remove-labels
           if: >
             (steps.check_team_review.outputs.result == 'true')
-            && contains(github.event.issue.labels.*.name, 'review-requested')
+            && contains(github.event.pull_request.labels.*.name, 'review-requested')
           uses: actions/github-script@v6
           with:
             script: |
