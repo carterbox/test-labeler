@@ -24,18 +24,18 @@
             debug: true
             script: |
               const teams = [
-                'conda-forge/staged-recipes',
-                'conda-forge/help-c-cpp',
-                'conda-forge/help-cdts',
-                'conda-forge/help-go',
-                'conda-forge/help-java',
-                'conda-forge/help-julia',
-                'conda-forge/help-nodejs',
-                'conda-forge/help-perl',
-                'conda-forge/help-python',
-                'conda-forge/help-python-c',
-                'conda-forge/help-r',
-                'conda-forge/help-ruby'
+                '@conda-forge/staged-recipes',
+                '@conda-forge/help-c-cpp',
+                '@conda-forge/help-cdts',
+                '@conda-forge/help-go',
+                '@conda-forge/help-java',
+                '@conda-forge/help-julia',
+                '@conda-forge/help-nodejs',
+                '@conda-forge/help-perl',
+                '@conda-forge/help-python',
+                '@conda-forge/help-python-c',
+                '@conda-forge/help-r',
+                '@conda-forge/help-ruby'
               ];
               let found_label = false;
               for (const team of teams) {
