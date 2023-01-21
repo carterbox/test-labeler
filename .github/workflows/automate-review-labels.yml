@@ -96,6 +96,19 @@
             script: |
               console.log(`Label was removed by ${context.payload.sender.login}`);
               return true;
+        - name: remove-labels
+          if: >
+            (steps.check_team_review.outputs.result == 'true')
+            && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+          uses: actions/github-script@v6
+          with:
+            script: |
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: ['Awaiting author contribution']
+              })
         - name: add-labels
           if: >
             (steps.check_team_review.outputs.result == 'true')
