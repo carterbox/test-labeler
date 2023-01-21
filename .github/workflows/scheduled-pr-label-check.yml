@@ -17,7 +17,7 @@ jobs:
           uses: actions/github-script@v6
           with:
             script: |
-              const queryString = 'q=' + encodeURIComponent('is:pr+is:open+label:review-requested+review:changes_requested');
+              const queryString = 'q=is:pr+is:open+label:review-requested+review:changes_requested');
               result = github.rest.search.issuesAndPullRequests({
                 queryString,
               });
