@@ -19,7 +19,7 @@ jobs:
             script: |
               const queryString = 'q=is:pr+is:open+label:review-requested+review:changes_requested';
               result = github.rest.search.issuesAndPullRequests({
-                queryString,
+                q: queryString,
               });
               console.log(`${result}`);
               return false;
