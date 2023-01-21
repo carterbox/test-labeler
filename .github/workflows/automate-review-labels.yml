@@ -82,7 +82,7 @@
               })
 
     check-remove-review-requested-label:
-      name: 'Check that review-requested label was removed by a team member'
+      name: 'When reviewed, remove review-requested label'
       if: >
         github.event.action == 'submitted' ||
         (github.event.action == 'unlabeled' 
