@@ -16,8 +16,9 @@ jobs:
           id: check_team_review
           uses: actions/github-script@v6
           with:
+#           +review:changes_requested
             script: |
-              const queryString = 'q=is:pr+is:open+label:review-requested+review:changes_requested';
+              const queryString = 'q=is:pr+is:open+label:review-requested';
               const result = await github.rest.search.issuesAndPullRequests({
                 q: queryString,
               });
