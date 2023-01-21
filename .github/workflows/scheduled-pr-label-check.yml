@@ -1,0 +1,50 @@
+name: 'Automated review labels'
+
+on: workflow_dispatch
+
+permissions:
+  issues: write # for adding label to an issue
+  pull-requests: write # for adding label to a pr
+
+jobs:
+
+  check-remove-review-requested-label:
+      name: 'When reviewed, remove review-requested label'
+      runs-on: ubuntu-latest
+      steps:
+        - name: check-team-membership
+          id: check_team_review
+          uses: actions/github-script@v6
+          with:
+            script: |
+              const queryString = 'q=' + encodeURIComponent('is:pr is:open label:review-requested review:changes_requested');
+              result = octokit.rest.search.issuesAndPullRequests({
+                queryString,
+              });
+              console.log(`${result}`);
+              return false;
+        - name: remove-labels
+          if: >
+            (steps.check_team_review.outputs.result == 'true')
+            && contains(github.event.issue.labels.*.name, 'review-requested')
+          uses: actions/github-script@v6
+          with:
+            script: |
+              github.rest.issues.removeLabel({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: ['review-requested']
+              })
+        - name: add-labels
+          if: >
+            (steps.check_team_review.outputs.result == 'true')
+          uses: actions/github-script@v6
+          with:
+            script: |
+              github.rest.issues.addLabels({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  labels: ['Awaiting author contribution']
+              });
