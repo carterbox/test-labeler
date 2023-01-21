@@ -7,6 +7,8 @@
       types: [unlabeled]
     pull_request_target:
       types: [unlabeled]
+    pull_request_review:
+      types: [submitted]
 
   permissions:
     issues: write # for adding label to an issue
@@ -82,8 +84,9 @@
     check-remove-review-requested-label:
       name: 'Check that review-requested label was removed by a team member'
       if: >
-        github.event.action == 'unlabeled'
-        && github.event.label.name == 'review-requested'
+        github.event.action == 'submitted' ||
+        (github.event.action == 'unlabeled' 
+        && github.event.label.name == 'review-requested')
       runs-on: ubuntu-latest
       steps:
         - name: check-team-membership
