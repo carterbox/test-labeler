@@ -22,7 +22,9 @@ jobs:
               const result = await github.rest.search.issuesAndPullRequests({
                 q: queryString,
               });
-              console.log(result);
+              console.log(result.status);
+              console.log(result.data.total_count);
+              console.log(result.data.items);
               return false;
         - name: remove-labels
           if: >
