@@ -18,7 +18,7 @@ jobs:
           with:
             script: |
               const queryString = 'q=' + encodeURIComponent('is:pr is:open label:review-requested review:changes_requested');
-              result = octokit.rest.search.issuesAndPullRequests({
+              result = github.rest.search.issuesAndPullRequests({
                 queryString,
               });
               console.log(`${result}`);
