@@ -99,7 +99,7 @@
         - name: remove-labels
           if: >
             (steps.check_team_review.outputs.result == 'true')
-            && contains(github.event.issue.labels.*.name, 'Awaiting author contribution')
+            && contains(github.event.issue.labels.*.name, 'review-requested')
           uses: actions/github-script@v6
           with:
             script: |
@@ -107,7 +107,7 @@
                   issue_number: context.issue.number,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  name: ['Awaiting author contribution']
+                  name: ['review-requested']
               })
         - name: add-labels
           if: >
